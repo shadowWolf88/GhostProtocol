@@ -3,6 +3,18 @@ from functools import lru_cache
 import os
 
 
+def _url_from_pg_vars() -> str:
+    """Construct a DB URL from individual PG* env vars (Railway always injects these)."""
+    host = os.getenv("PGHOST") or os.getenv("RAILWAY_TCP_PROXY_DOMAIN")
+    port = os.getenv("PGPORT") or os.getenv("RAILWAY_TCP_PROXY_PORT") or "5432"
+    user = os.getenv("PGUSER")
+    password = os.getenv("PGPASSWORD")
+    db = os.getenv("PGDATABASE")
+    if all([host, user, password, db]):
+        return f"postgresql://{user}:{password}@{host}:{port}/{db}"
+    return ""
+
+
 def _build_async_url(raw: str) -> str:
     """Convert postgres:// or postgresql:// to postgresql+asyncpg://"""
     if raw.startswith("postgres://"):
@@ -38,8 +50,13 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
 
     def model_post_init(self, __context):
-        # If Railway injects DATABASE_URL in postgres:// form, fix both URLs
-        raw = os.getenv("DATABASE_URL", "")
+        # Try all the ways Railway might provide the DB URL
+        raw = (
+            os.getenv("DATABASE_URL")
+            or os.getenv("DATABASE_PRIVATE_URL")
+            or _url_from_pg_vars()
+            or ""
+        )
         if raw and not raw.startswith("postgresql+asyncpg://"):
             object.__setattr__(self, "DATABASE_URL", _build_async_url(raw))
             object.__setattr__(self, "SYNC_DATABASE_URL", _build_sync_url(raw))
