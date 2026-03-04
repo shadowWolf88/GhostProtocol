@@ -16,9 +16,17 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-database_url = os.getenv(
-    "SYNC_DATABASE_URL",
-    "postgresql://ghost:protocol@localhost:5432/ghostprotocol"
+# Railway injects DATABASE_URL; local dev uses SYNC_DATABASE_URL
+_raw_url = (
+    os.getenv("SYNC_DATABASE_URL")
+    or os.getenv("DATABASE_URL")
+    or "postgresql://ghost:protocol@localhost:5432/ghostprotocol"
+)
+# Strip async driver suffix so psycopg2 (sync) can use it
+database_url = (
+    _raw_url
+    .replace("postgres://", "postgresql://", 1)
+    .replace("postgresql+asyncpg://", "postgresql://")
 )
 config.set_main_option("sqlalchemy.url", database_url)
 
