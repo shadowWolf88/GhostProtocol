@@ -14,6 +14,13 @@ from app.routers import auth, players, world, skills, operations, heat, trace, p
 logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
+# Startup diagnostics — log key env vars so Railway logs show what's injected
+import os as _os
+for _k, _v in sorted(_os.environ.items()):
+    if any(x in _k.upper() for x in ["DATABASE", "POSTGRES", "PG", "PORT", "RAILWAY"]):
+        _safe = (_v[:8] + "...") if len(_v) > 8 else _v
+        logger.info(f"[env] {_k}={_safe}")
+
 
 async def _background_tasks():
     from app.database import AsyncSessionFactory
