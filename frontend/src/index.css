@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #0a0a0a;
+  color: #00ff41;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  cursor: default;
+}
+
+/* ─── Scrollbars (webkit) ───────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
+::-webkit-scrollbar-thumb {
+  background: #00aa2a;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff41;
+}
+
+/* ─── xterm.js overrides ────────────────────────────────── */
+.xterm {
+  height: 100%;
+  padding: 8px;
+}
+.xterm-viewport {
+  overflow-y: auto !important;
+}
+.xterm-screen {
+  image-rendering: pixelated;
+}
+
+/* ─── Scanline overlay ──────────────────────────────────── */
+.scanlines::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.05) 2px,
+    rgba(0, 0, 0, 0.05) 4px
+  );
+  z-index: 9999;
+}
+
+/* ─── Glow text effects ─────────────────────────────────── */
+.text-glow-green {
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
+}
+.text-glow-red {
+  text-shadow: 0 0 8px rgba(255, 32, 32, 0.8);
+}
+.text-glow-amber {
+  text-shadow: 0 0 8px rgba(255, 176, 0, 0.8);
+}
+
+/* ─── Terminal cursor ───────────────────────────────────── */
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: #00ff41;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ─── Heat level color classes ──────────────────────────── */
+.heat-safe    { color: #00ff41; }
+.heat-low     { color: #aaff00; }
+.heat-medium  { color: #ffb000; }
+.heat-high    { color: #ff6600; }
+.heat-critical { color: #ff2020; animation: glow-red 1s ease-in-out infinite alternate; }
+
+@keyframes glow-red {
+  0%  { text-shadow: 0 0 5px #ff2020; }
+  100%{ text-shadow: 0 0 20px #ff2020, 0 0 40px #ff2020; }
+}
+
+/* ─── D3 graph ──────────────────────────────────────────── */
+.trace-graph-container svg {
+  display: block;
+}
+.trace-graph-container .node circle {
+  cursor: pointer;
+  transition: r 0.2s;
+}
+.trace-graph-container .node circle:hover {
+  r: 8;
+}
+.trace-graph-container .link {
+  stroke-opacity: 0.6;
+}
+.trace-graph-container .node text {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  fill: #00ff41;
+  pointer-events: none;
+}
+
+/* ─── Typewriter effect ─────────────────────────────────── */
+.typewriter-line {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 0.5s steps(40, end) forwards;
+}
+
+@keyframes typing {
+  from { max-width: 0; }
+  to   { max-width: 100%; }
+}
+
+/* ─── Input resets ──────────────────────────────────────── */
+input, textarea {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #00ff41;
+  font-family: inherit;
+  caret-color: #00ff41;
+}
+
+input::placeholder {
+  color: #333;
+}
+
+/* ─── Selection ─────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+}
+
+/* ─── Utility classes ───────────────────────────────────── */
+.border-terminal { border-color: #1a1a1a; }
+.bg-terminal-surface { background: #111111; }
+.bg-terminal { background: #0a0a0a; }
